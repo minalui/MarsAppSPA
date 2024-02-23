@@ -1,9 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import {createBrowserRouter} from 'react-router-dom';
+import {
+    createBrowserRouter,
+    RouterProvider,
+} from 'react-router-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import HomePage from "./Pages/HomePage";
+import CounterPage from "./Pages/CounterPage";
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -12,12 +17,15 @@ const root = ReactDOM.createRoot(
 const router = createBrowserRouter([
     {
         path: '/',
-        element: <App/>
+        element: <HomePage/>
+    },{
+        path: '/counter',
+        element: <CounterPage/>
     }
 ]);
 root.render(
   <React.StrictMode>
-    <App />
+    <RouterProvider router={router}/>
   </React.StrictMode>
 );
 
