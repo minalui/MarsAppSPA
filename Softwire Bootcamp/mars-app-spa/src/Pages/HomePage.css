@@ -1,0 +1,12 @@
+.RoverImageList {
+    display: flex;
+    flex-direction: row;
+}
+.RoverImageList__Item {
+    list-style: none;
+}
+
+.RoverImageList__Item__Image {
+    width: 200px;
+    padding-left: 5px;
+}

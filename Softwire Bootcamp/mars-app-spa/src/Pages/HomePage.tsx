@@ -1,13 +1,15 @@
 import React, {useEffect, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import Select from 'react-select';
-import IntroductionTemplate from "../components/IntroductionTemplate";
 import axios from "axios";
+import IntroductionTemplate from "../components/IntroductionTemplate";
+import './HomePage.css';
 
 interface SelectOption {
     value: string,
     label: string
 }
+
 function HomePage() {
 
     const navigate = useNavigate();
@@ -15,7 +17,7 @@ function HomePage() {
     const [selectedCameraOption, setSelectedCameraOption] = useState<SelectOption|null>(null);
     const [roverOptions, setRoverOptions] = useState<SelectOption[]|undefined>(undefined);
     const [cameraOptions, setCameraOptions] = useState<SelectOption[]|undefined>(undefined);
-    const [images, setImages] = useState(undefined);
+    const [images, setImages] = useState<String[]|null>(null);
 
     useEffect(() => {
         console.log(roverOptions);
@@ -44,9 +46,11 @@ function HomePage() {
 
     useEffect(() => {
         if(selectedRoverOption != null && selectedCameraOption != null) {
-            axios.get(`http://localhost:8000/rovers/${selectedRoverOption.value}/photos/${selectedCameraOption}`)
+            axios.get(`http://localhost:8000/rovers/${selectedRoverOption.value}/photos/${selectedCameraOption.value}`)
                 .then(response => {
-
+                    console.log(response.data);
+                    setImages(response.data);
+                    console.log(images);
                 })
         }
     }, [selectedCameraOption])
@@ -77,6 +81,9 @@ function HomePage() {
                 options={cameraOptions}
                 isSearchable={true}
             />
+            <div className="RoverImageList">
+                {images ? images.map((image) => (<li className="RoverImageList__Item"><img className="RoverImageList__Item__Image" src={image.toString()}/></li>)): <p>No images found</p>}
+            </div>
 
             <button onClick={() => navigate('/counter')}>Counters</button>
         </div>
