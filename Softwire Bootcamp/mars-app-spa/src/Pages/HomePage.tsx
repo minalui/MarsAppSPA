@@ -10,6 +10,17 @@ interface SelectOption {
     label: string
 }
 
+interface ApodInfo {
+    copyright: string,
+    date: string,
+    explanation: string,
+    hdurl: string,
+    media_type: string,
+    service_version: string,
+    title: string,
+    url: string
+}
+
 function HomePage() {
 
     const navigate = useNavigate();
@@ -18,9 +29,11 @@ function HomePage() {
     const [roverOptions, setRoverOptions] = useState<SelectOption[]|undefined>(undefined);
     const [cameraOptions, setCameraOptions] = useState<SelectOption[]|undefined>(undefined);
     const [images, setImages] = useState<String[]|null>(null);
+    const [apod, setApod] = useState<ApodInfo|null>(null);
+
+    const imageNotFoundUrl = "https://www.google.com/url?sa=i&url=http%3A%2F%2Fwww.pallenz.co.nz%2Fpage&psig=AOvVaw1lU1SWKELIhHbT4OnnjhC3&ust=1709113434580000&source=images&cd=vfe&opi=89978449&ved=0CBMQjRxqFwoTCPiPmO2dy4QDFQAAAAAdAAAAABAE";
 
     useEffect(() => {
-        console.log(roverOptions);
         if (roverOptions === undefined){
             axios.get('http://localhost:8000/rovers')
                 .then(response => {
@@ -34,7 +47,6 @@ function HomePage() {
     },[]);
 
     useEffect(() => {
-        console.log(selectedRoverOption);
         if(selectedRoverOption != null && cameraOptions === undefined) {
             axios.get(`http://localhost:8000/rovers/${selectedRoverOption.value}`)
                 .then(response => {
@@ -48,12 +60,19 @@ function HomePage() {
         if(selectedRoverOption != null && selectedCameraOption != null) {
             axios.get(`http://localhost:8000/rovers/${selectedRoverOption.value}/photos/${selectedCameraOption.value}`)
                 .then(response => {
-                    console.log(response.data);
                     setImages(response.data);
-                    console.log(images);
                 })
         }
     }, [selectedCameraOption])
+
+    useEffect(() => {
+        if(apod === null) {
+            axios.get(`http://localhost:8000/apod`)
+                .then(response => {
+                    setApod(response.data);
+                })
+        }
+    }, []);
 
     const handleRoverChange = (option: SelectOption | null) => {
         if (option) {
@@ -70,6 +89,10 @@ function HomePage() {
     return (
         <div className="App">
             <IntroductionTemplate header_title={"NASA"} image_src={"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/NASA_logo.svg/1200px-NASA_logo.svg.png"} image_alt={"NASA logo"} first_paragraph_content={"National Aeronautics and Space Administration"} second_paragraph_content={"NASA is a U.S. government agency that is responsible for science and technology related to air and space."}/>
+            <h3>Astronomy of the Day</h3>
+            <img src={apod? apod.url : imageNotFoundUrl}/>
+            <p>{apod?.title}</p>
+            <p>{apod?.explanation}</p>
             <h3>Select a rover and camera to see the images!</h3>
             <Select
                 onChange={handleRoverChange}
